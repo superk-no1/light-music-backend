@@ -17,7 +17,7 @@ exports.addSong = async (req, res) => {
 };
 
 exports.deleteSong = async (req, res) => {
-    await User.findByIdAndDelete(req.params.id);
+    await Song.findByIdAndDelete(req.params.id);
     res.json({ message: 'Song deleted!' });
 };
 

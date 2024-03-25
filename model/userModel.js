@@ -4,6 +4,8 @@ const bcrypt = require('bcrypt');
 const userSchema = new mongoose.Schema({
   username: String,
   password: String,
+  desc: String,
+  email: String,
 });
 
 // 密码哈希化中间件

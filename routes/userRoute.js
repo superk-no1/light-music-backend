@@ -3,8 +3,8 @@ const userRouter = express.Router();
 const userController = require('../controller/userController');
 
 //user account
-userRouter.get('/register', userController.userRegister);
-userRouter.get('/login', userController.userLogin);
+userRouter.post('/register', userController.userRegister);
+userRouter.post('/login', userController.userLogin);
 
 //test
 userRouter.get('/all', userController.getAllUser);
