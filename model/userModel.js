@@ -6,6 +6,10 @@ const userSchema = new mongoose.Schema({
   password: String,
   desc: String,
   email: String,
+  favoriteSongs: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Song'
+  }],
 });
 
 // 密码哈希化中间件

@@ -1,4 +1,5 @@
 const Song = require('../model/songModel');
+const User = require('../model/userModel');
 
 exports.getAllSong = async (req, res) => {
     const songs = await Song.find();
@@ -22,19 +23,58 @@ exports.deleteSong = async (req, res) => {
 };
 
 exports.likeSong = async (req, res) => {
-    const song = await Song.findById(req.params.id);
-    song.likeCount++;
-    const likedSong = await song.save();
-    res.json(likedSong);
+    //todo 添加session去掉userId
+    let userId = req.body.userId;
+    let songId = req.params.id;
+    try {
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { $push: { favoriteSongs: songId } },
+            { new: true }
+        );
+        if (!user) {
+            return res.status(404).send('No user found.');
+        }
+        // 用户更新成功后，增加歌曲的 likeCount
+        const song = await Song.findByIdAndUpdate(
+            songId,
+            { $inc: { likeCount: 1 } },
+            { new: true }
+        );
+        if (!song) {
+            return res.status(404).send('No song found.');
+        }
+        res.status(200).send(user);
+    } catch (err) {
+        return res.status(500).send(err);
+    }
 };
 
 exports.unLikeSong = async (req, res) => {
-    const song = await Song.findById(req.params.id);
-    if (song.likeCount > 0) {
-        song.likeCount--;
+    let userId = req.body.userId;
+    let songId = req.params.id;
+    try {
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { $pull: { favoriteSongs: songId } },
+            { new: true }
+        );
+        if (!user) {
+            return res.status(404).send('No user found.');
+        }
+        // 用户成功取消收藏后，减少歌曲的 likeCount
+        const song = await Song.findByIdAndUpdate(
+            songId,
+            { $inc: { likeCount: -1 } },  // 使用 $inc 减小 likeCount 的值
+            { new: true }
+        );
+        if (!song) {
+            return res.status(404).send('No song found.');
+        }
+        res.status(200).send(user);
+    } catch (err) {
+        return res.status(500).send(err);
     }
-    const likedSong = await song.save();
-    res.json(likedSong);
 };
 
 exports.getSuggestSongs = async (req, res) => {

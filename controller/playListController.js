@@ -28,7 +28,7 @@ exports.deletePlayList = async (req, res) => {
 
 exports.addMusic = async (req, res) => {
     const playList = await PlayList.findById(req.params.id);   
-    playList.songs.push(req.body['id']);
+    playList.songs.push(req.body.songId);
     await playList.save();
     res.json({ message: 'Music add!' });
 };
