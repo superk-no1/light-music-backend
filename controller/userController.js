@@ -1,4 +1,5 @@
 const User = require('../model/userModel');
+const jwt = require('jsonwebtoken');
 
 exports.userRegister = async (req, res) => {
   let newUser = new User({
@@ -24,7 +25,8 @@ exports.userLogin = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json('Password incorrect.');
     }
-    return res.status(200).json('Login success!');
+    const token = jwt.sign({ id: user._id }, 'my_secret_key', { expiresIn: '12h' });
+    return res.status(200).json({ token });
   } catch (err) {
     return res.status(500).json('server error.');
   }

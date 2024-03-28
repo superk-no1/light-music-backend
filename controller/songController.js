@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken');
+
 const Song = require('../model/songModel');
 const User = require('../model/userModel');
 
@@ -23,8 +25,9 @@ exports.deleteSong = async (req, res) => {
 };
 
 exports.likeSong = async (req, res) => {
-    //todo 添加session去掉userId
-    let userId = req.body.userId;
+    let decodedToken = jwt.decode(req.headers['token'], {complete: true});
+    let userId = decodedToken.payload.id;
+    console.log(userId);
     let songId = req.params.id;
     try {
         const user = await User.findByIdAndUpdate(
@@ -51,7 +54,9 @@ exports.likeSong = async (req, res) => {
 };
 
 exports.unLikeSong = async (req, res) => {
-    let userId = req.body.userId;
+    let decodedToken = jwt.decode(req.headers['token'], {complete: true});
+    let userId = decodedToken.payload.id;
+    console.log(userId);
     let songId = req.params.id;
     try {
         const user = await User.findByIdAndUpdate(
