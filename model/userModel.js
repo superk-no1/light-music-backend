@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
+  id: String,
   username: String,
   password: String,
   desc: String,
@@ -15,6 +16,7 @@ const userSchema = new mongoose.Schema({
 // 密码哈希化中间件
 userSchema.pre('save', function (next) {
   const user = this;
+  user.id = user._id;
   if (!user.isModified('password')) return next();
 
   bcrypt.hash(user.password, 10, function (err, hash) {

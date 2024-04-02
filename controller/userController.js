@@ -9,7 +9,7 @@ exports.userRegister = async (req, res) => {
 
   try {
     await newUser.save();
-    res.status(200).json('Registration successful.');
+    res.status(200).json(newUser);
   } catch (err) {
     res.status(500).json(err);
   }
@@ -31,6 +31,13 @@ exports.userLogin = async (req, res) => {
     return res.status(500).json('server error.');
   }
 };
+
+exports.getMeInfo = async (req, res) => {
+  let decodedToken = jwt.decode(req.headers['token'], {complete: true});
+  let userId = decodedToken.payload.id;
+  const user = await User.findById(userId);
+  res.json(user);
+}
 
 // test
 exports.getAllUser = async (req, res) => {
