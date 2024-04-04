@@ -3,13 +3,16 @@ const mongoose = require('mongoose');
 const SongSchema = new mongoose.Schema({
     title: String,
     album: String,
-    albumId: String,
+    albumId: Number,
     artist: String,
     duration: String,
     data: String,
     uri: String,
-    sourceUrl: String,
     likeCount: {
+        type: Number,
+        default: 0
+    },
+    listenCount: {
         type: Number,
         default: 0
     },

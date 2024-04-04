@@ -19,6 +19,11 @@ exports.addSong = async (req, res) => {
     res.json({ message: 'Song created!' });
 };
 
+exports.syncLocal = async (req, res) => {
+    const songIds = req.body;
+    res.json(songIds);
+};
+
 exports.deleteSong = async (req, res) => {
     await Song.findByIdAndDelete(req.params.id);
     res.json({ message: 'Song deleted!' });
@@ -82,9 +87,29 @@ exports.unLikeSong = async (req, res) => {
     }
 };
 
+exports.listenSong = async (req, res) => {
+    let decodedToken = jwt.decode(req.headers['token'], {complete: true});
+    let userId = decodedToken.payload.id;
+    console.log(userId);
+    let songId = req.params.id;
+    try {
+        const song = await Song.findByIdAndUpdate(
+            songId,
+            { $inc: { listenCount: 1 } },
+            { new: true }
+        );
+        if (!song) {
+            return res.status(404).send('No song found.');
+        }
+        res.status(200).send(song);
+    } catch (err) {
+        return res.status(500).send(err);
+    }
+};
+
 exports.getSuggestSongs = async (req, res) => {
-    const songs = await Song.find()
-        .sort({ likeCount: -1 })
-        .limit(10);
-    res.json(songs);
+    let songs = await Song.find().limit(10);
+    songs.sort((a, b) => (3 * b.listenCount + 7 * b.likeCount) - (3 * a.listenCount + 7 * a.likeCount));
+    const songIds = songs.map(song => song.id);
+    res.json(songIds);
 };
