@@ -21,7 +21,30 @@ exports.addSong = async (req, res) => {
 
 exports.syncLocal = async (req, res) => {
     const songIds = req.body;
-    res.json(songIds);
+    if (songIds === null || songIds.length === 0) {
+        res.status(500).send('can not be null')
+    }
+    const songPromises = songIds.map(songId => {
+        return Song.create({
+            songId: songId,
+            title: "default_title",
+            album: "default_album",
+            albumId: 0,
+            artist: "default_artist",
+            duration: "default_duration",
+            data: "default_data",
+            uri: "default_uri",
+            likeCount: 0,
+            listenCount: 0
+        });
+    });
+    Promise.all(songPromises)
+        .then(results => {
+            res.json(songPromises);
+        })
+        .catch(err => {
+            res.status(500).send('failed');
+        });
 };
 
 exports.deleteSong = async (req, res) => {
@@ -32,7 +55,6 @@ exports.deleteSong = async (req, res) => {
 exports.likeSong = async (req, res) => {
     let decodedToken = jwt.decode(req.headers['token'], {complete: true});
     let userId = decodedToken.payload.id;
-    console.log(userId);
     let songId = req.params.id;
     try {
         const user = await User.findByIdAndUpdate(
@@ -61,7 +83,6 @@ exports.likeSong = async (req, res) => {
 exports.unLikeSong = async (req, res) => {
     let decodedToken = jwt.decode(req.headers['token'], {complete: true});
     let userId = decodedToken.payload.id;
-    console.log(userId);
     let songId = req.params.id;
     try {
         const user = await User.findByIdAndUpdate(
@@ -90,7 +111,6 @@ exports.unLikeSong = async (req, res) => {
 exports.listenSong = async (req, res) => {
     let decodedToken = jwt.decode(req.headers['token'], {complete: true});
     let userId = decodedToken.payload.id;
-    console.log(userId);
     let songId = req.params.id;
     try {
         const song = await Song.findByIdAndUpdate(
@@ -110,6 +130,6 @@ exports.listenSong = async (req, res) => {
 exports.getSuggestSongs = async (req, res) => {
     let songs = await Song.find().limit(10);
     songs.sort((a, b) => (3 * b.listenCount + 7 * b.likeCount) - (3 * a.listenCount + 7 * a.likeCount));
-    const songIds = songs.map(song => song.id);
+    const songIds = songs.map(song => song.songId);
     res.json(songIds);
 };
