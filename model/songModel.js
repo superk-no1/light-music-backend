@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const comments = require('./commentModel')
 
 const SongSchema = new mongoose.Schema({
     songId: String,
@@ -17,6 +18,7 @@ const SongSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    comments: [comments.schema]
 });
 
 module.exports = mongoose.model('Song', SongSchema);
