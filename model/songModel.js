@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const comments = require('./commentModel')
 
+//tag 歌曲Model结构
 const SongSchema = new mongoose.Schema({
     songId: String,
     title: String,

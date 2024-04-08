@@ -1,6 +1,7 @@
 const User = require('../model/userModel');
 const jwt = require('jsonwebtoken');
 
+//tag 用户注册
 exports.userRegister = async (req, res) => {
   let newUser = new User({
     username: req.body.username,
@@ -15,6 +16,7 @@ exports.userRegister = async (req, res) => {
   }
 };
 
+//tag 用户登录，成功后给用户返回token
 exports.userLogin = async (req, res) => {
   try {
     const user = await User.findOne({ username: req.body.username });
@@ -32,6 +34,7 @@ exports.userLogin = async (req, res) => {
   }
 };
 
+//tag 查询用户信息
 exports.getMeInfo = async (req, res) => {
   let decodedToken = jwt.decode(req.headers['token'], {complete: true});
   let userId = decodedToken.payload.id;
@@ -39,7 +42,7 @@ exports.getMeInfo = async (req, res) => {
   res.json(user);
 }
 
-// test
+//tag user增删改查...
 exports.getAllUser = async (req, res) => {
   const users = await User.find();
   res.json(users);
